@@ -1,7 +1,7 @@
 #ifndef UGLY_CORE_H
 #define UGLY_CORE_H
 
-#include <stddef.h> // size_t, NULL, offsetof
+#include <stddef.h> // size_t, offsetof
 #include <stdbool.h> // bool
 
 // Given that C is a byte-manipulation language, this should be standard.
@@ -52,18 +52,5 @@ typedef int (*compare_fn_t)(const void* a, const void* b);
 
 // Swaps the memory contents of the first SIZE bytes pointed to by A and B.
 void swap(void* restrict a, void* restrict b, size_t size);
-
-/** Searches an ORDERED_ARRAY of N items, each with SIZE bytes, for KEY,
- * where COMPAR is used to compare its elements and LERP* to interpolate from
- * a target value to its expected index in an ordered array.
- * *LERP takes an x in [min,max] and outputs an index in [low,high].
- *
- * Returns a pointer to the element KEY or NULL when it could not be found.
- */
-void* lerpsearch(const void* key, const void* ordered_array, index_t n,
-                 size_t size, compare_fn_t compar,
-                 index_t (*lerp)(const void* x,
-                                 const void* min, const void* max,
-                                 index_t low, index_t high));
 
 #endif // UGLY_CORE_H

@@ -33,34 +33,6 @@ static void static_array_size(void)
 	#undef N
 }
 
-static int intcmp(const void* a, const void* b)
-{
-	return *(int*)a - *(int*)b;
-}
-
-static index_t idxlerp(const void* x,
-                       const void* in_min, const void* in_max,
-                       index_t out_min, index_t out_max)
-{
-	return out_min + ((*(int*)x - *(int*)in_min) * (out_max - out_min))
-	                 / (*(int*)in_max - *(int*)in_min);
-}
-
-static void lerp_search(void)
-{
-	const int array[] = {-6, 0, 2, 3, 6, 7, 11};
-	const int n = ARRAY_SIZE(array);
-
-	int key = 6;
-	int* found = lerpsearch(&key, array, n, sizeof(int), intcmp, idxlerp);
-	assert(found != NULL);
-	assert(*found == key);
-
-	key = -11;
-	found = lerpsearch(&key, array, n, sizeof(int), intcmp, idxlerp);
-	assert(found == NULL);
-}
-
 struct string {
 	index_t length;
 	char characters[];
@@ -89,7 +61,6 @@ err_t main(int argc, const char* argv[])
 	swap_primitives();
 	swap_pointers();
 	static_array_size();
-	lerp_search();
 	struct_base_address();
 	return 0;
 }
