@@ -29,11 +29,11 @@ typedef long index_t;
  * freed. When this reallocation fails, the old block should be preserved.
  *
  * A function in the standard library supporting this protocol is realloc(). */
-typedef void* (*allocator_fn_t)(void* ptr, size_t size);
+typedef void *(*allocator_fn_t)(void *ptr, size_t size);
 
 /** Generic comparison function for the contents pointed to by its arguments:
  *
- * - It returns a number ==0  when A == B.
+ * - It returns a number ==0 when A == B.
  * - It returns a number < 0 when A < B.
  * - It returns a number <=0 when A <= B.
  * - It returns a number > 0 when A > B.
@@ -41,16 +41,16 @@ typedef void* (*allocator_fn_t)(void* ptr, size_t size);
  *
  * For instance, if A and B are pointers to int, one could use (*a - *b) as
  * the return of one such function. */
-typedef int (*compare_fn_t)(const void* a, const void* b);
+typedef int (*compare_fn_t)(const void *a, const void *b);
 
 // Gets number of elements of static array ARR.
 #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
 
 // Given address PTR of field MEMBER, finds address of its CONTAINER struct.
 #define containerof(ptr, container, member) \
-	((container*)((byte_t*)(ptr) - offsetof(container, member)))
+	((container *)((byte_t *)(ptr) - offsetof(container, member)))
 
 // Swaps the memory contents of the first SIZE bytes pointed to by A and B.
-void swap(void* restrict a, void* restrict b, size_t size);
+void swap(void *restrict a, void *restrict b, size_t size);
 
 #endif // UGLY_CORE_H

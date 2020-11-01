@@ -9,7 +9,7 @@
 
 
 // Checks if string has a balanced sequence of brackets <(), [], {}>.
-static bool balanced(const char* string)
+static bool balanced(const char *string)
 {
 	stack_t stack;
 	stack_init(&stack, 0, sizeof(char), NULL);
@@ -28,7 +28,7 @@ static bool balanced(const char* string)
 				goto FAIL;
 			}
 			else {
-				char last_open = *(char*)stack_peek(&stack, 0);
+				char last_open = *(char *)stack_peek(&stack, 0);
 				if (   (last_open == '(' && c != ')')
 				    || (last_open == '[' && c != ']')
 				    || (last_open == '{' && c != '}')
@@ -52,9 +52,9 @@ FAIL:
 	return false;
 }
 
-int main(int argc, const char* argv[])
+int main(int argc, const char *argv[])
 {
-	const char* parens[] = {
+	const char *parens[] = {
 		"(foo)",
 		"ab)ba",
 		"0(1[2[3]2]1{2[3]2}1{2(3)2}1)0",

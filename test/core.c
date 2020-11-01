@@ -18,9 +18,9 @@ static void swap_primitives(void)
 
 static void swap_pointers(void)
 {
-	char* s1 = "Hello, generic";
-	char* s2 = "World!";
-	swap(&s1, &s2, sizeof(char*));
+	char *s1 = "Hello, generic";
+	char *s2 = "World!";
+	swap(&s1, &s2, sizeof(char *));
 	assert(strcmp(s1, "World!") == 0);
 	assert(strcmp(s2, "Hello, generic") == 0);
 }
@@ -41,10 +41,10 @@ struct string {
 static void struct_base_address(void)
 {
 	const index_t len = sizeof("TEST");
-	struct string* str = malloc(sizeof(struct string) + len);
+	struct string *str = malloc(sizeof(struct string) + len);
 	assert(str != NULL);
 
-	char* c_str = str->characters;
+	char *c_str = str->characters;
 	c_str[0] = 'T';
 	c_str[1] = 'E';
 	c_str[2] = 'S';
@@ -52,11 +52,11 @@ static void struct_base_address(void)
 	c_str[4] = '\0';
 	assert(strcmp(c_str, "TEST") == 0);
 
-	struct string* string = containerof(c_str, struct string, characters);
+	struct string *string = containerof(c_str, struct string, characters);
 	assert(string == str);
 }
 
-err_t main(int argc, const char* argv[])
+err_t main(int argc, const char *argv[])
 {
 	swap_primitives();
 	swap_pointers();
