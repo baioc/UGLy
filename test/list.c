@@ -16,7 +16,7 @@ static void list_primitives(void)
 	list_t numbers;
 
 	// initially, size should be 0
-	int err = list_init(&numbers, 0, sizeof(int), NULL);
+	int err = list_init(&numbers, 0, sizeof(int), STDLIB_ALLOCATOR);
 	assert(!err);
 	assert(list_size(&numbers) == 0);
 
@@ -49,7 +49,7 @@ static void list_pointers(void)
 	list_t names;
 
 	// initially, size should be 0
-	int err = list_init(&names, 3, sizeof(char *), realloc);
+	int err = list_init(&names, 3, sizeof(char *), STDLIB_ALLOCATOR);
 	assert(!err);
 	assert(list_size(&names) == 0);
 
@@ -95,7 +95,7 @@ static void list_sorting(void)
 {
 	const char *array[] = {"Gb", "Ab", "F#", "B", "D"};
 	list_t notes;
-	err_t err = list_init(&notes, 0, sizeof(char *), NULL);
+	err_t err = list_init(&notes, 0, sizeof(char *), STDLIB_ALLOCATOR);
 	assert(!err);
 
 	// insert elements in the list in unsorted fashion
@@ -129,10 +129,9 @@ static void list_sorting(void)
 	assert(!list_sorted(&notes, strrefcmp));
 }
 
-int main(int argc, const char *argv[])
+int main(void)
 {
 	list_primitives();
 	list_pointers();
 	list_sorting();
-	return 0;
 }

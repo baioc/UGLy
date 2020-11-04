@@ -1,6 +1,6 @@
 #include "stack.h"
 
-extern inline err_t stack_init(stack_t *, index_t, size_t, allocator_fn_t);
+extern inline err_t stack_init(stack_t *stack, index_t length, size_t type_size, struct allocator alloc);
 
 extern inline void stack_destroy(stack_t *stack);
 

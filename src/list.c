@@ -2,31 +2,31 @@
 
 #include <assert.h>
 #include <string.h> // memcpy
-#include <stdlib.h> // realloc, bsearch, qsort
+#include <stdlib.h> // bsearch, qsort
 #include <errno.h>
 
-#include "core.h" // NULL, swap
+#include "core.h" // NULL, memswap, STDLIB_ALLOCATOR
 
 
-err_t list_init(list_t *list, index_t n, size_t type_size, allocator_fn_t alloc)
+err_t list_init(list_t *list, index_t length, size_t type_size, struct allocator alloc)
 {
-	assert(n >= 0);
+	assert(length >= 0);
 	assert(type_size > 0);
 
 	list->length = 0;
-	list->capacity = n;
+	list->capacity = length;
 	list->elem_size = type_size;
 
-	list->allocator = alloc != NULL ? alloc : realloc;
-	list->data = list->allocator(NULL, type_size * n);
-	if (list->data == NULL && n != 0) return ENOMEM;
+	list->alloc = alloc.method != NULL ? alloc : STDLIB_ALLOCATOR;
+	list->data = list->alloc.method(&list->alloc, NULL, length * list->elem_size);
+	if (list->data == NULL && length != 0) return ENOMEM;
 
 	return 0;
 }
 
 void list_destroy(list_t *list)
 {
-	list->allocator(list->data, 0);
+	list->alloc.method(&list->alloc, list->data, 0);
 }
 
 index_t list_size(const list_t *list)
@@ -40,13 +40,13 @@ inline void *list_ref(const list_t *list, index_t index)
 {
 	assert(0 <= index);
 	assert(index < list->length);
-	return list->data + list->elem_size * index;
+	return list->data + index * list->elem_size;
 }
 
 static err_t list_grow(list_t *list)
 {
 	list->capacity = list->capacity > 0 ? list->capacity * 2 : 8;
-	void *new = list->allocator(list->data, list->elem_size * list->capacity);
+	void *new = list->alloc.method(&list->alloc, list->data, list->capacity * list->elem_size);
 	if (new == NULL) return ENOMEM;
 	list->data = new;
 	return 0;
@@ -55,13 +55,13 @@ static err_t list_grow(list_t *list)
 err_t list_append(list_t *list, const void *element)
 {
 	// grow current capacity in case its not enough
-	if (list->capacity < list->length + 1) {
+	if (list->length + 1 > list->capacity) {
 		const err_t error = list_grow(list);
 		if (error) return error;
 	}
 
 	// append copy to the end of the list
-	byte_t *end = list->data + list->elem_size * list->length;
+	byte_t *end = list->data + list->length * list->elem_size;
 	memcpy(end, element, list->elem_size);
 	list->length++;
 
@@ -70,7 +70,7 @@ err_t list_append(list_t *list, const void *element)
 
 inline void list_swap(list_t *list, index_t a, index_t b)
 {
-	swap(list_ref(list, a), list_ref(list, b), list->elem_size);
+	memswap(list_ref(list, a), list_ref(list, b), list->elem_size);
 }
 
 err_t list_insert(list_t *list, index_t index, const void *element)

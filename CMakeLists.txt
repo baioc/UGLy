@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.8)
 project(UGLY LANGUAGES C)
 
-set(CMAKE_C_FLAGS "-std=c99")
+set(CMAKE_C_FLAGS "-std=c11")
 
 set(LIBRARY_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/lib)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/bin)
@@ -18,6 +18,8 @@ add_library(ugly STATIC
 	src/map.c
 	include/ugly/hash.h
 	src/hash.c
+	include/ugly/alloc.h
+	src/alloc.c
 )
 target_include_directories(ugly PUBLIC include/ugly)
 
@@ -40,3 +42,8 @@ add_executable(test_map test/map.c)
 target_link_libraries(test_map PUBLIC ugly)
 target_include_directories(test_map PUBLIC include)
 add_test(NAME map COMMAND test_map)
+
+add_executable(test_alloc test/alloc.c)
+target_link_libraries(test_alloc PUBLIC ugly)
+target_include_directories(test_alloc PUBLIC include)
+add_test(NAME alloc COMMAND test_alloc)

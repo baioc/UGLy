@@ -3,58 +3,69 @@
 
 #include "core.h"
 
-// Dynamic array with contiguous storage, O(1) access and O(n) insert/remove.
+/// Dynamic array with contiguous storage, O(1) access and O(n) insert/remove.
 typedef struct {
 	index_t length;
 	index_t capacity;
 	byte_t *data;
 	size_t elem_size;
-	allocator_fn_t allocator;
+	struct allocator alloc;
 } list_t;
 
-/** Initializes LIST with initial capacity for N elements of TYPE_SIZE bytes
- * and sets it to use ALLOC (will be set to a default when NULL) as allocator.
+/**
+ * @brief Initializes a generic list.
  *
- * Returns 0 on success or ENOMEM in case ALLOC fails.
+ * @param list list to be initialized, should be destroyed later.
+ * @param length initial list capacity in number of elements.
+ * @param type_size size, in bytes, of each list element.
+ * @param alloc memory allocator to be used (in-place reallocation support is recommended).
  *
- * list_destroy() must be called on LIST afterwards. */
-err_t list_init(list_t *list, index_t n, size_t type_size, allocator_fn_t alloc);
+ * @return 0 on success or ENOMEM in case alloc fails.
+ */
+err_t list_init(list_t *list, index_t length, size_t type_size, struct allocator alloc);
 
-// Frees any resources allocated by LIST.
+/// Frees any resources allocated by the given list.
 void list_destroy(list_t *list);
 
-// Gets the number of elements currently stored inside LIST.
+/// Gets the number of elements currently stored in the list.
 index_t list_size(const list_t *list);
 
-// Checks if LIST is empty.
+/// Checks whether the list is empty.
 inline bool list_empty(const list_t *list)
 {
 	return list_size(list) <= 0;
 }
 
-// Returns a pointer to the element at INDEX in the dynamic array LIST.
+/// Returns a pointer to the element being indexed in the dynamic list.
 void *list_ref(const list_t *list, index_t index);
 
-/** Inserts TYPE_SIZE bytes of ELEMENT at position INDEX of the LIST.
+/**
+ * @brief Inserts an element at the given index of the list.
+ * All previous elements keep their indexes and all of the next ones are moved.
  *
- * Returns 0 on success or ENOMEM in case ALLOC fails. */
+ * @return 0 on success or ENOMEM in case ALLOC fails.
+ */
 err_t list_insert(list_t *list, index_t index, const void *element);
 
-// Equivalent to list_insert() at the end of the list.
+/// Equivalent to `list_insert()` at the end of the list.
 err_t list_append(list_t *list, const void *element);
 
-// Pops the element at INDEX from LIST and copies it to SINK.
+/**
+ * @brief Pops the indexed element from the list to the given address.
+ * All previous elements keep their indexes and all of the next ones are moved.
+ */
 void list_remove(list_t *list, index_t index, void *restrict sink);
 
-// Swaps elements in indexes A and B of LIST.
+/// Swaps list elements in the given indexes.
 void list_swap(list_t *list, index_t a, index_t b);
 
-// Sorts LIST in-place using COMPARE to order its elements.
+/// Sorts list in-place using the given function to order its elements.
 void list_sort(list_t *list, int (*compare)(const void *, const void *));
 
-/** Searches a sorted LIST for KEY using COMP to compare its elements.
- *
- * Returns the index of KEY, or a negative value when not found. */
+/**
+ * @brief Searches a SORTED list for some element, using an ordering function.
+ * @return Returns the index where the element was found and a negative value otherwise.
+ */
 index_t list_search(const list_t *list, const void *key, compare_fn_t comp);
 
 #endif // UGLY_LIST_H

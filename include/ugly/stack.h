@@ -1,57 +1,60 @@
 #ifndef UGLY_STACK_H
 #define UGLY_STACK_H
 
-#include "core.h" // size_t, index_t, err_t, allocator_fn_t
 #include "list.h"
 
-// Dynamic LIFO stack with constant access, push (amortized), and pop.
+/// Dynamic LIFO stack with constant access, peek, push (amortized) and pop.
 typedef list_t stack_t;
 
-/** Initializes STACK with intial capacity for N elements of TYPE_SIZE bytes
- * and sets it to use ALLOC (will be set to a default when NULL) as allocator.
+/**
+ * @brief Initializes a generic stack.
  *
- * Returns 0 on success or ENOMEM in case ALLOC fails.
+ * @param stack stack to be initialized, should be destroyed later.
+ * @param length initial stack capacity in number of elements.
+ * @param type_size size, in bytes, of each stack element.
+ * @param alloc memory allocator to be used (performs well with a stack allocator).
  *
- * stack_destroy() must be called on STACK afterwards. */
-inline err_t stack_init(stack_t *stack, index_t n,
-                        size_t type_size, allocator_fn_t alloc)
+ * @return 0 on success or ENOMEM in case alloc fails.
+ */
+inline err_t stack_init(stack_t *stack, index_t length, size_t type_size, struct allocator alloc)
 {
-	return list_init(stack, n, type_size, alloc);
+	return list_init(stack, length, type_size, alloc);
 }
 
-// Frees any resources allocated by STACK.
+/// Frees any resources allocated by the given stack.
 inline void stack_destroy(stack_t *stack)
 {
 	list_destroy(stack);
 }
 
-// Gets the depth (number of elements inside) of the STACK.
+/// Gets the current depth (number of elements) of the stack.
 inline index_t stack_size(const stack_t *stack)
 {
 	return list_size(stack);
 }
 
-// Checks if STACK is empty.
+/// Checks if the stack is empty.
 inline bool stack_empty(const stack_t *stack)
 {
 	return list_empty(stack);
 }
 
-// Returns a pointer to N-th element below the top of the dynamic STACK.
+/// Returns a pointer to the Nth element below the top of the dynamic stack.
 inline void *stack_peek(const stack_t *stack, index_t n)
 {
 	return list_ref(stack, stack_size(stack) - 1 - n);
 }
 
-/** Pushes TYPE_SIZE bytes of ELEMENT to the top of the STACK.
- *
- * Returns 0 on success or ENOMEM in case ALLOC fails. */
+/**
+ * @brief Pushes an element at the given address onto the top of the stack.
+ * @return 0 on success or ENOMEM in case ALLOC fails.
+ */
 inline err_t stack_push(stack_t *stack, const void *element)
 {
 	return list_append(stack, element);
 }
 
-// Pops the top of the STACK and copies its TYPE_SIZE bytes to SINK.
+/// Pops the top of the stack and copies it to the given address.
 inline void stack_pop(stack_t *stack, void *restrict sink)
 {
 	list_remove(stack, list_size(stack) - 1, sink);

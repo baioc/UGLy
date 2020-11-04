@@ -4,7 +4,7 @@
 #include "core.h"
 #include "hash.h" // hash_fn_t
 
-// Generic hash table with constant amortized access, insertions and deletes.
+/// Generic hash table with constant amortized access, insertions and deletes.
 typedef struct {
 	index_t count;
 	index_t filled;
@@ -15,50 +15,62 @@ typedef struct {
 	size_t value_size;
 	compare_fn_t keyeq;
 	hash_fn_t hash;
-	allocator_fn_t allocator;
+	struct allocator alloc;
 } map_t;
 
-/** Initializes MAP with initial capacity for N mappings from keys with KEY_SIZE
- * bytes -- that should be equality-comparable by KEY_CMP and hashable by
- * KEY_HASH -- to values with VALUE_SIZE bytes.
+/**
+ * @brief Initializes a generic map.
  *
- * If ALLOC or KEY_HASH are NULL, default implementations will be provided.
- * map_destroy() must be called on MAP afterwards.
+ * @param map map to be initialized, should be destroyed later.
+ * @param n initial mapping capacity.
+ * @param key_size size, in bytes, of the map's keys.
+ * @param value_size size, in bytes, of the map's associated values.
+ * @param key_cmp function that enables equality comparison between keys.
+ * @param key_hash a hash function for keys.
+ * @param alloc memory allocator to be used.
  *
- * Returns 0 on success or ENOMEM when ALLOC fails. */
+ * @return 0 on success or ENOMEM in case alloc fails.
+ */
 err_t map_init(map_t *map, index_t n, size_t key_size, size_t value_size,
-               compare_fn_t key_cmp, hash_fn_t key_hash, allocator_fn_t alloc);
+               compare_fn_t key_cmp, hash_fn_t key_hash, struct allocator alloc);
 
-// Frees any resources allocated by MAP.
+/// Frees any resources allocated by the map.
 void map_destroy(map_t *map);
 
-// Gets the number of used entries in MAP.
+/// Gets the number of mappings contained in the map.
 index_t map_size(const map_t *map);
 
-// Checks if MAP is empty.
+/// Checks whether the map is empty.
 inline bool map_empty(const map_t *map)
 {
 	return map_size(map) <= 0;
 }
 
-/** Returns a pointer to the value associated with KEY in the dynamic MAP, this
- * will be NULL when the pairing does not exist. */
+/**
+ * @brief Finds the value associated with the given key.
+ * @return dynamic address of the associated value, or NULL when not found.
+ */
 void *map_get(const map_t *map, const void *key);
 
-/** Inserts the (KEY -> VALUE) entry on the MAP, overwritting any previous one.
- *
- * Returns ENOMEM in case ALLOC fails, a negative number if an entry with
- * KEY already existed and had its value overwritten; zero otherwise. */
+/**
+ * @brief Puts the <key -> value> entry on the map.
+ * @return ENOMEM in case any allocation fails, a negative number if an entry
+ * with the given key already existed and had its value overwritten; zero otherwise.
+ */
 err_t map_insert(map_t *map, const void *key, const void *value);
 
-// Removes KEY's entry from MAP. Returns 0 on success and ENOKEY otherwise.
+/**
+ * @brief Removes a key's entry from the map.
+ * @return 0 on success or ENOKEY if the key wasn't in the map to begin with.
+ */
 err_t map_remove(map_t *map, const void *key);
 
-/** Iterates (in unspecified order) through all entries in MAP, calling FUNC on
- * each one with an extra forwarded argument, eg: FUNC(k, v, FORWARD).
- *
- * The iteration will be halted in case FUNC returns a non-zero value, which
- * will be then returned by this function. Returns 0 otherwise. */
+/**
+ * @brief Iterates (in unspecified order) through all entries in the map, calling
+ * the given procedure on each one with an extra forwarded argument.
+ * @return The iteration will be halted in case the procedure yields a non-zero
+ * value, which will be then immediately returned. Returns 0 otherwise.
+ */
 err_t map_for_each(const map_t *map,
                    err_t (*func)(const void *, void *, void *),
                    void *forward);

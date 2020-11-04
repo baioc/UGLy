@@ -21,7 +21,7 @@ static int strrefcmp(const void *a, const void *b)
 static hash_t strhash(const void *ptr, size_t bytes)
 {
 	const char *str = *(const char **)ptr;
-	const size_t n = strlen(str);  // bytes is actualy sizeof(char *)
+	const size_t n = strlen(str); // since bytes is actualy sizeof(char *)
 	return fnv_1a(str, n);
 }
 
@@ -31,11 +31,11 @@ static int test_each(const void *key, void *value, void *arr)
 	const int digit = *(int *)value;
 	const char **num_array = (const char **)arr;
 	const int diff = strcmp(number, num_array[digit]);
-	assert(!diff);
+	assert(diff == 0);
 	return diff;
 }
 
-int main(int argc, const char *argv[])
+int main(void)
 {
 	const char *numbers[] = {"zero", "one", "two", "three", "four", "five"};
 	const int n = ARRAY_SIZE(numbers);
@@ -43,7 +43,7 @@ int main(int argc, const char *argv[])
 	// initialize map: string -> int, should be empty
 	map_t dict;
 	err_t err = map_init(&dict, 2, sizeof(char *), sizeof(int),
-	                     strrefcmp, strhash, NULL);
+	                     strrefcmp, strhash, STDLIB_ALLOCATOR);
 	assert(!err);
 	assert(map_empty(&dict));
 
@@ -91,5 +91,4 @@ int main(int argc, const char *argv[])
 
 	// deallocate map
 	map_destroy(&dict);
-	return 0;
 }

@@ -12,7 +12,7 @@
 static bool balanced(const char *string)
 {
 	stack_t stack;
-	stack_init(&stack, 0, sizeof(char), NULL);
+	stack_init(&stack, 0, sizeof(char), STDLIB_ALLOCATOR);
 
 	const size_t length = strlen(string);
 	for (int i = 0; i < length; ++i) {
@@ -52,7 +52,7 @@ FAIL:
 	return false;
 }
 
-int main(int argc, const char *argv[])
+int main(void)
 {
 	const char *parens[] = {
 		"(foo)",
