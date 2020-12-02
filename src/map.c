@@ -10,11 +10,7 @@
 
 
 // Maximum load factor. Ideally this would be tuned based on hash function and usual keys.
-#ifndef UGLY_MAP_MAX_LOAD
-#	define UGLY_MAP_MAX_LOAD 0.75
-#elif UGLY_MAP_MAX_LOAD <= 0.0 || 1.0 <= UGLY_MAP_MAX_LOAD
-#	error "maximum load factor of open-addressed hash table should be in (0,1)"
-#endif
+#define UGLY_MAP_MAX_LOAD 0.75
 
 struct map_entry {
 	bool in_use;

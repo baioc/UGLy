@@ -8,6 +8,13 @@
 #include "core.h" // NULL, memswap, STDLIB_ALLOCATOR
 
 
+#define RESIZE_FACTOR 1.618 // the golden ratio, just for fun
+
+#define SHRINK_RATIO ((1.0 / RESIZE_FACTOR) / 2.0)
+
+#define MIN_NONZERO_SIZE 8
+
+
 err_t list_init(list_t *list, index_t length, size_t type_size, struct allocator alloc)
 {
 	assert(length >= 0);
@@ -43,11 +50,13 @@ inline void *list_ref(const list_t *list, index_t index)
 	return list->data + index * list->elem_size;
 }
 
-static err_t list_grow(list_t *list)
+static inline err_t list_grow(list_t *list)
 {
-	list->capacity = list->capacity > 0 ? list->capacity * 2 : 8;
-	void *new = list->alloc.method(&list->alloc, list->data, list->capacity * list->elem_size);
+	assert(RESIZE_FACTOR > 1); // amortization sanity check
+	const index_t new_capacity = list->capacity > 0 ? list->capacity * RESIZE_FACTOR : MIN_NONZERO_SIZE;
+	void *new = list->alloc.method(&list->alloc, list->data, new_capacity * list->elem_size);
 	if (new == NULL) return ENOMEM;
+	list->capacity = new_capacity;
 	list->data = new;
 	return 0;
 }
@@ -89,6 +98,17 @@ err_t list_insert(list_t *list, index_t index, const void *element)
 	return 0;
 }
 
+static inline void list_shrink(list_t *list)
+{
+	assert(SHRINK_RATIO < 1.0/RESIZE_FACTOR); // amortization sanity check
+	const index_t new_capacity = list->capacity / RESIZE_FACTOR;
+	if (new_capacity < MIN_NONZERO_SIZE) return;
+	void *new = list->alloc.method(&list->alloc, list->data, new_capacity * list->elem_size);
+	assert(new != NULL); // shouldn't happen!
+	list->capacity = new_capacity;
+	list->data = new;
+}
+
 void list_remove(list_t *list, index_t index, void *restrict sink)
 {
 	assert(0 <= index);
@@ -103,6 +123,10 @@ void list_remove(list_t *list, index_t index, void *restrict sink)
 		list_swap(list, i, i + 1);
 
 	list->length--;
+
+	// check if we should shrink capacity and do so if needed
+	if (list->length < list->capacity * SHRINK_RATIO)
+		list_shrink(list);
 }
 
 index_t list_search(const list_t *lst, const void *key, compare_fn_t cmp)
