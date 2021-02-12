@@ -1,31 +1,14 @@
 image: gcc
 
-stages:
-  - build
-  - test
-
-build:
-  stage: build
+build_and_test:
+  stage: test
   before_script:
-    - apt update
-    - apt -y install cmake make
+    - apt-get update
+    - apt-get -y install cmake make valgrind
   script:
     - mkdir build; cd build
     - cmake ..
     - make -j
-    - cd ..
-  artifacts:
-    paths:
-      - build/
-      - bin/
-      - lib/
-
-test:
-  stage: test
-  before_script:
-    - apt -y install valgrind
-  script:
-    - cd build
     - ctest --output-on-failure -T MemCheck
     - cd ..
     - |
@@ -33,4 +16,7 @@ test:
       cp build/Testing/$TIMESTAMP/*.xml build/Testing/
   artifacts:
     paths:
+      - build/
+      - bin/
+      - lib/
       - build/Testing/*.xml
