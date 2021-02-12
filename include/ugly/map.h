@@ -1,3 +1,8 @@
+/**
+ * @file map.h
+ * @brief Associative arrays (aka maps).
+ */
+
 #ifndef UGLY_MAP_H
 #define UGLY_MAP_H
 

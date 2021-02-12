@@ -1,3 +1,8 @@
+/**
+ * @file stack.h
+ * @brief LIFO stacks.
+ */
+
 #ifndef UGLY_STACK_H
 #define UGLY_STACK_H
 

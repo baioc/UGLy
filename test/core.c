@@ -55,6 +55,7 @@ static void struct_base_address(void)
 
 int main(void)
 {
+	assert(sizeof(byte_t) == 1);
 	memswap_primitives();
 	memswap_pointers();
 	static_array_size();

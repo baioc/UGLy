@@ -151,6 +151,8 @@ static void *pool_alloc(struct allocator *ctx, void *ptr, size_t size)
 	} else if (ptr != NULL && size != 0) {
 		return size <= pool->chunk_size ? ptr : NULL;
 	}
+
+	return NULL; // unreachable
 }
 
 struct allocator make_pool_allocator(pool_allocator_t *pool,

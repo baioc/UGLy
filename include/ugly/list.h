@@ -1,3 +1,8 @@
+/**
+ * @file list.h
+ * @brief Dynamic arrays (elsewhere known as vectors).
+ */
+
 #ifndef UGLY_LIST_H
 #define UGLY_LIST_H
 

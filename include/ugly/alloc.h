@@ -1,3 +1,8 @@
+/**
+ * @file alloc.h
+ * @brief Built-in allocator schemes on top of a user-provided buffer.
+ */
+
 #ifndef UGLY_ALLOC_H
 #define UGLY_ALLOC_H
 

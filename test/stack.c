@@ -8,7 +8,7 @@
 #include <ugly/core.h> // ARRAY_SIZE
 
 
-// Checks if string has a balanced sequence of brackets <(), [], {}>.
+/// Checks if string has a balanced sequence of brackets <(), [], {}>.
 static bool balanced(const char *string)
 {
 	stack_t stack;
@@ -61,7 +61,6 @@ int main(void)
 		"(this[is)(a)(test])({braclets}{must)(match})",
 		"[[ignore](other){stuff]((...)",
 	};
-
 	const bool answers[] = {
 		true,
 		false,
@@ -69,7 +68,6 @@ int main(void)
 		false,
 		false,
 	};
-
 	assert(ARRAY_SIZE(parens) == ARRAY_SIZE(answers));
 
 	for (int i = 0; i < ARRAY_SIZE(parens); ++i)

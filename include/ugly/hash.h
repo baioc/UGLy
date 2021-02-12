@@ -1,3 +1,8 @@
+/**
+ * @file hash.h
+ * @brief Typedefs and built-in functions for hashing.
+ */
+
 #ifndef UGLY_HASH_H
 #define UGLY_HASH_H
 

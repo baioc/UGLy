@@ -29,7 +29,7 @@ static void list_primitives(void)
 	// size should be the number of numbers
 	assert(list_size(&numbers) == n);
 
-	// check if the list's front is the expected value, then pop it
+	// check if the list's front is the expected value, then pop it and repeat
 	for (int i = 0; i < n; ++i) {
 		int num = *((int *)list_ref(&numbers, 0));
 		assert(num == array[i]);
@@ -126,7 +126,9 @@ static void list_sorting(void)
 		if (j == i) continue;
 		list_swap(&notes, i, j);
 	}
-	assert(!list_sorted(&notes, strrefcmp));
+	assert(list_size(&notes) == length);
+
+	list_destroy(&notes);
 }
 
 int main(void)
