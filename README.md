@@ -1,6 +1,8 @@
 UGLy - Unsafe Generic LibrarY
 ======
 
+[![pipeline status](https://gitlab.com/baioc/UGLy/badges/master/pipeline.svg)](https://gitlab.com/baioc/UGLy/-/commits/master)
+
 [UGLy](https://gitlab.com/baioc/UGLy) is a C(11) library used to apply the DRY principle and avoid re-implementing the same common data structures, procedures and macros everywhere.
 
 It uses "unsafe" generics (`void *`) in the sense that all data types are seen as a sequence of bytes and the user is responsible for making sure they are properly interpreted (and memory aligned).
