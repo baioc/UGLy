@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 3.9.6)
 
 ## Base C project
-project(UGLY
+project(UGLy
 	VERSION 0.2
 	LANGUAGES C
-	DESCRIPTION "Unsafe Generic LibrarY"
+	DESCRIPTION "Unsafe Generic Library"
 )
 set(CMAKE_C_FLAGS "-std=c11")
 

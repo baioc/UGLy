@@ -1,7 +1,7 @@
 UGLy - Unsafe Generic LibrarY
 ======
 
-UGLy is a C(11) library used to apply the DRY principle and avoid re-implementing the same common data structures, procedures and macros everywhere.
+[UGLy](https://gitlab.com/baioc/UGLy) is a C(11) library used to apply the DRY principle and avoid re-implementing the same common data structures, procedures and macros everywhere.
 
 It uses "unsafe" generics (`void *`) in the sense that all data types are seen as a sequence of bytes and the user is responsible for making sure they are properly interpreted (and memory aligned).
 It should be noted that the library's containers always use copy semantics and never "take ownership" of given elements, meaning the user is still expected to manage the lifetimes of dynamically allocated objects ("you allocate it, you free it").
@@ -57,24 +57,6 @@ Instead of using primitives for everything, UGLy defines some [core](include/ugl
 
 We also include some macros which tend to be needed every now and then when programming in C.
 
-### Tests
+### Unsafe but not untested
 
-We have a simple [CTest suite](test/) set up to try and ensure new changes won't cause major breaks.
-
-
-To-Do
-------
-
-This is a list of desired features which are not yet implemented; feel free to contribute.
-
-- Use a self-balancing BST instead of a hash-table to implement `map_t` when the user doesn't provide a custom hashing function.
-- A set data structure, probably just a wrapper over `map_t` but ideally with more efficient union, intersection and difference operations.
-- Generic FIFO queue, probably implemented on top of a circular buffer deque.
-- Macros to define an "extrusive" linked list type and its operations for a specific base data type.
-- Same as above, but for doubly-linked lists.
-- Bit-map based implementation of sets which are dense and enumerable.
-- Bit-manipulating macros.
-- Heap-based priority queue.
-- Improve `map_t`'s probing method (check out the algorithm used in Lua tables).
-- Expand the hash library with additional hashing functions for common data types.
-- Directed graph data structure.
+We have an automatic [CTest suite](test/) set up to ensure new changes won't cause major breaks.

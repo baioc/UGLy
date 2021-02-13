@@ -9,8 +9,8 @@
 #include "hash.h" // fnv_1a
 
 
-// Maximum load factor. Ideally this would be tuned based on hash function and usual keys.
-#define UGLY_MAP_MAX_LOAD 0.75
+// Ideally, this would be tuned based on hash function and usual keys.
+#define MAX_LOAD_FACTOR 0.75
 
 struct map_entry {
 	bool in_use;
@@ -49,8 +49,8 @@ err_t map_init(map_t *map, index_t n, size_t key_size, size_t value_size,
 	assert(value_size >= 0);
 	assert(key_cmp != NULL);
 
-	// adjust initial capacity by load factor and round up to nearest power of 2
-	n = nearest_pow2(n / UGLY_MAP_MAX_LOAD);
+	/// adjust initial capacity by load factor and round up to nearest power of 2
+	n = nearest_pow2(n / MAX_LOAD_FACTOR);
 
 	map->count = 0;
 	map->filled = 0;
@@ -91,8 +91,8 @@ static index_t find_entry(const map_t *map, const byte_t *keys, size_t n,
                           const void *key)
 {
 	// this procedure does not loop infinitely because there will always be
-	// at least some unused buckets due to a maximum load factor smaller than 1
-	assert(UGLY_MAP_MAX_LOAD < 1);
+	/// at least some unused buckets due to a maximum load factor smaller than 1
+	assert(MAX_LOAD_FACTOR < 1);
 
 	const size_t entry_size = sizeof(struct map_entry) + map->key_size;
 	index_t tombstone = -1;
@@ -164,8 +164,8 @@ static err_t rehash_table(map_t *map, index_t n)
 
 err_t map_insert(map_t *map, const void *key, const void *value)
 {
-	// check if the table's capacity needs to grow to reduce its load factor
-	if (map->filled + 1 > map->capacity * UGLY_MAP_MAX_LOAD) {
+	/// check if the table's capacity needs to grow to reduce its load factor
+	if (map->filled + 1 > map->capacity * MAX_LOAD_FACTOR) {
 		const index_t new_capacity = map->capacity > 0 ? map->capacity * 2 : 8;
 		const err_t error = rehash_table(map, new_capacity);
 		if (error) return error;
