@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.9.6)
 
 ## Base C project
 project(UGLy
-	VERSION 0.2
+	VERSION 0.2.0
 	LANGUAGES C
 	DESCRIPTION "Unsafe Generic Library"
 )
