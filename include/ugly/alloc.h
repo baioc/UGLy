@@ -1,6 +1,6 @@
 /**
  * @file alloc.h
- * @brief Built-in allocator schemes on top of a user-provided buffer.
+ * @brief Allocators on top of user-provided buffers.
  */
 
 #ifndef UGLY_ALLOC_H

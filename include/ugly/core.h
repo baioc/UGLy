@@ -1,6 +1,6 @@
 /**
  * @file core.h
- * @brief Core UGLY types, macros and declarations.
+ * @brief Core types, macros and procedures.
  *
  * Exports standard `bool`, `size_t` and `NULL`.
  */

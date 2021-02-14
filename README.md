@@ -2,6 +2,7 @@ UGLy - Unsafe Generic LibrarY
 ======
 
 [![pipeline status](https://gitlab.com/baioc/UGLy/badges/master/pipeline.svg)](https://gitlab.com/baioc/UGLy/-/commits/master)
+[![latest version](https://img.shields.io/badge/version-0.2.0-blue)](https://gitlab.com/baioc/UGLy/-/jobs/1028576802/artifacts/file/build/html/files.html)
 
 [UGLy](https://gitlab.com/baioc/UGLy) is a C(11) library used to apply the DRY principle and avoid re-implementing the same common data structures, procedures and macros everywhere.
 
