@@ -34,6 +34,8 @@ target_include_directories(ugly INTERFACE include)
 
 
 ## CTest suite
+set(CMAKE_C_FLAGS_DEBUG "-g -O0 --coverage")
+
 include(CTest) # includes enable_testing()
 
 add_executable(test_core test/core.c)

@@ -7,16 +7,21 @@ build-and-test:
   stage: test
   before_script:
     - apt-get update
-    - apt-get -y install cmake make valgrind doxygen
+    - apt-get -y install cmake make valgrind doxygen python3 python3-pip
+    - pip3 install gcovr
   script:
     - mkdir build; cd build
-    - cmake ..
+    - cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=gcc
     - make -j
     - ctest --output-on-failure -T MemCheck
+    - gcovr . --root .. --exclude ../test/ --exclude-unreachable-branches --print-summary --xml-pretty -o coverage.xml
     - if [ -n "$CI_COMMIT_TAG" ]; then make docs; fi
     - cd ..
+  coverage: /^\s*lines:\s*\d+.\d+\%/
   artifacts:
     paths:
       - build/
       - bin/
       - lib/
+    reports:
+      cobertura: build/coverage.xml
