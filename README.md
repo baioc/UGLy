@@ -1,10 +1,11 @@
 UGLy - Unsafe Generic LibrarY
 ======
 
-[![pipeline status](https://gitlab.com/baioc/UGLy/badges/master/pipeline.svg)](https://gitlab.com/baioc/UGLy/-/commits/master)
-[![latest version](https://img.shields.io/badge/version-0.2.0-blue)](https://gitlab.com/baioc/UGLy/-/jobs/1028576802/artifacts/file/build/html/files.html)
+[![latest version](https://img.shields.io/badge/version-0.2.0-blue)](https://baioc.gitlab.io/UGLy/files)
+[![pipeline status](https://gitlab.com/baioc/UGLy/badges/master/pipeline.svg?ignore_skipped=true)](https://gitlab.com/baioc/UGLy)
+[![test coverage](https://gitlab.com/baioc/UGLy/badges/master/coverage.svg)](https://baioc.gitlab.io/UGLy/coverage)
 
-[UGLy](https://gitlab.com/baioc/UGLy) is a C(11) library used to apply the DRY principle and avoid re-implementing the same common data structures, procedures and macros everywhere.
+[UGLy](.) is a C(11) library used to apply the DRY principle and avoid re-implementing the same common data structures, procedures and macros everywhere.
 
 It uses "unsafe" generics (`void *`) in the sense that all data types are seen as a sequence of bytes and the user is responsible for making sure they are properly interpreted (and memory aligned).
 It should be noted that the library's containers always use copy semantics and never "take ownership" of given elements, meaning the user is still expected to manage the lifetimes of dynamically allocated objects ("you allocate it, you free it").
