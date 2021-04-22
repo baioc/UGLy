@@ -1,3 +1,6 @@
+include:
+  - template: Security/SAST.gitlab-ci.yml
+
 image: gcc
 
 cache:
@@ -51,3 +54,6 @@ pages:
   artifacts:
     paths:
       - public/
+
+sast:
+  before_script: []
