@@ -1,22 +1,53 @@
 image: gcc
 
-include:
-  - template: 'Workflows/MergeRequest-Pipelines.gitlab-ci.yml'
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - .apt/
 
-build-and-test:
-  stage: test
-  before_script:
+before_script:
+    - export APT_DIR=$CI_PROJECT_DIR/.apt && export APT_STATE_LISTS=$APT_DIR/lists && export APT_CACHE_ARCHIVES=$APT_DIR/archives
+    - printf "dir::state::lists    ${APT_STATE_LISTS};\ndir::cache::archives    ${APT_CACHE_ARCHIVES};\n" > /etc/apt/apt.conf
+    - mkdir -p "${APT_STATE_LISTS}/partial" && mkdir -p "${APT_CACHE_ARCHIVES}/partial"
     - apt-get update
-    - apt-get -y install cmake make valgrind doxygen
+    - apt-get -y install cmake make valgrind doxygen gcc python3 python3-pip
+    - pip3 install gcovr
+
+build:
+  stage: build
   script:
     - mkdir build; cd build
-    - cmake ..
+    - cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=gcc
     - make -j
-    - ctest --output-on-failure -T MemCheck
-    - if [ -n "$CI_COMMIT_TAG" ]; then make docs; fi
     - cd ..
   artifacts:
     paths:
       - build/
       - bin/
       - lib/
+
+test:
+  stage: test
+  script:
+    - cd build
+    - ctest --output-on-failure -T MemCheck
+    - gcovr . --root .. --exclude ../test/ --exclude-unreachable-branches --print-summary --xml=coverage.xml --xml-pretty --html=coverage.html
+    - cd ..
+  coverage: /^\s*lines:\s*\d+.\d+\%/
+  artifacts:
+    paths:
+      - build/
+    reports:
+      cobertura: build/coverage.xml
+
+pages:
+  stage: deploy
+  script:
+    - cd build
+    - make docs
+    - cd ..
+    - cp -r build/html/ public/
+    - cp -r build/coverage.html public/coverage.html
+  artifacts:
+    paths:
+      - public/
