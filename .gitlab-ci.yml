@@ -1,14 +1,20 @@
 image: gcc
 
-update:
-  stage: .pre
-  script:
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - .apt/
+
+before_script:
+    - export APT_DIR=$CI_PROJECT_DIR/.apt && export APT_STATE_LISTS=$APT_DIR/lists && export APT_CACHE_ARCHIVES=$APT_DIR/archives
+    - printf "dir::state::lists    ${APT_STATE_LISTS};\ndir::cache::archives    ${APT_CACHE_ARCHIVES};\n" > /etc/apt/apt.conf
+    - mkdir -p "${APT_STATE_LISTS}/partial" && mkdir -p "${APT_CACHE_ARCHIVES}/partial"
     - apt-get update
+    - apt-get -y install cmake make valgrind doxygen gcc python3 python3-pip
+    - pip3 install gcovr
 
 build:
   stage: build
-  before_script:
-    - apt-get -y install cmake make valgrind gcc doxygen
   script:
     - mkdir build; cd build
     - cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=gcc
@@ -22,9 +28,6 @@ build:
 
 test:
   stage: test
-  before_script:
-    - apt-get -y install python3 python3-pip
-    - pip3 install gcovr
   script:
     - cd build
     - ctest --output-on-failure -T MemCheck
@@ -39,14 +42,12 @@ test:
 
 pages:
   stage: deploy
-  rules:
-    - if: "$CI_COMMIT_TAG"
   script:
     - cd build
     - make docs
     - cd ..
-    - cp build/html/ public/
-    - cp build/coverage.html public/coverage.html
+    - cp -r build/html/ public/
+    - cp -r build/coverage.html public/coverage.html
   artifacts:
     paths:
       - public/
