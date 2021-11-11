@@ -49,9 +49,9 @@ Currently implemented generic data structures:
 
 Whenever memory allocations are needed, the user can choose to provide his own custom allocator or use one of the [generic built-in ones](include/ugly/alloc.h) (most of which allocate on a user-provided buffer):
 - `STDLIB_ALLOCATOR`: simply calls `malloc`, `realloc` and `free` from stdlib.
-- `pool_allocator_t`: fixed maximum allocation size, zero overhead and no external fragmentation while supporting deallocations in any order.
+- `pool_allocator_t`: fixed maximum allocation size and no external fragmentation while supporting deallocations in any order.
 - `stack_allocator_t`: variable allocation size, can free and do in-place reallocations but only in Last-In-First-Out fashion.
-- `arena_allocator_t`: variable allocation size, almost no memory overhead, never frees.
+- `arena_allocator_t`: variable allocation size, zero memory overhead, never frees.
 
 ### Descriptive type definitions
 

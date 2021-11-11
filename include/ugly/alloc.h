@@ -22,7 +22,7 @@ typedef struct {
  * @param buffer backing memory buffer.
  * @param buffer_size buffer size, in bytes.
  *
- * @return a fast allocator with no fragmentation, but that never actually
+ * @return a fast allocator with zero memory overhead, but that never actually
  * frees any memory and only supports in-place reallocation of the single most
  * recently allocated block.
  */
@@ -62,9 +62,9 @@ typedef struct {
  * @param buffer_size buffer size, in bytes.
  * @param chunk_size maximum allocation size.
  *
- * @return a zero-overhead allocator which supports frees and will work with
+ * @return a fixed-size allocator which supports frees and will work with
  * requests for in-place reallocation (even if it doesn't make much sense in
- * this case as all allocated chunks have the same size anyway).
+ * this case as all allocated chunks have the same size).
  */
 struct allocator make_pool_allocator(pool_allocator_t *pool,
                                      void *buffer, size_t buffer_size,

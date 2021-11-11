@@ -65,12 +65,12 @@ void list_remove(list_t *list, index_t index, void *restrict sink);
 void list_swap(list_t *list, index_t a, index_t b);
 
 /// Sorts list in-place using the given function to order its elements.
-void list_sort(list_t *list, int (*compare)(const void *, const void *));
+void list_sort(list_t *list, compare_fn_t compare);
 
 /**
  * @brief Searches a SORTED list for some element, using an ordering function.
  * @return Returns the index where the element was found and a negative value otherwise.
  */
-index_t list_search(const list_t *list, const void *key, compare_fn_t comp);
+index_t list_search(const list_t *list, const void *key, compare_fn_t compare);
 
 #endif // UGLY_LIST_H
