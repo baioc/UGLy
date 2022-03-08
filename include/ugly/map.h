@@ -18,7 +18,7 @@ typedef struct {
 	byte_t *values;
 	size_t key_size;
 	size_t value_size;
-	compare_fn_t keyeq;
+	compare_fn_t compare;
 	hash_fn_t hash;
 	struct allocator alloc;
 } map_t;

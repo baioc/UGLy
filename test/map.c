@@ -117,16 +117,17 @@ void benchmark(int n, int reserve)
 	                     ulongrefcmp, ulonghash, STDLIB_ALLOCATOR);
 	assert(!err);
 
-	clock_t begin = clock();
+	const clock_t begin = clock();
 	for (int i = 0; i < n; ++i) {
 		const unsigned long key = rand();
 		const int value = i;
 		map_insert(&dict, &key, &value);
 	}
-	clock_t end = clock();
+	const clock_t end = clock();
 
-	float elapsedMs = end*1e3/CLOCKS_PER_SEC - begin*1e3/CLOCKS_PER_SEC;
-	printf("Elapsed: %.6f ms\n", elapsedMs);
+	const float elapsedNs = end*1e9/CLOCKS_PER_SEC - begin*1e9/CLOCKS_PER_SEC;
+	printf("Total: %.3f ms\n", elapsedNs / 1e6);
+	printf("Per element: %.0f ns\n", elapsedNs / n);
 }
 
 

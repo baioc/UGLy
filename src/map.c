@@ -1,3 +1,16 @@
+/**
+ * @file map.c
+ *
+ * This associative array ADT is implemented as a power-of-two-sized hash table.
+ * We chose to use closed hashing: no linked lists, reprobe on collision. Also,
+ * this means pointers into the map are not stable, so prefer to hold keys.
+ *
+ * Entries are stored in two parallel arrays: one for keys, another for values.
+ * This was chosen since no operation dereferences the value array, that's up
+ * to the user. Therefore we should get better locality by only touching keys.
+ * Probing method is linear, with an extra jump on the 1st collision.
+ */
+
 #include "map.h"
 
 #include <assert.h>
@@ -14,7 +27,7 @@
 
 struct map_entry {
 	bool in_use;
-	bool undead;
+	bool is_tombstone;
 	alignas(max_align_t) byte_t key[];
 };
 
@@ -25,7 +38,7 @@ static void clear_entries(byte_t *entries, index_t n, size_t size)
 	for (; entries < end; entries += size) {
 		struct map_entry *entry = (struct map_entry *)entries;
 		entry->in_use = false;
-		entry->undead = false;
+		entry->is_tombstone = false;
 	}
 }
 
@@ -57,7 +70,7 @@ err_t map_init(map_t *map, index_t n, size_t key_size, size_t value_size,
 	map->capacity = n;
 	map->key_size = key_size;
 	map->value_size = value_size;
-	map->keyeq = key_cmp;
+	map->compare = key_cmp;
 	map->hash = key_hash != NULL ? key_hash : fnv_1a;
 
 	map->alloc = alloc.method != NULL ? alloc : STDLIB_ALLOCATOR;
@@ -92,27 +105,33 @@ static index_t find_entry(const map_t *map, const byte_t *keys, size_t n,
 {
 	// this procedure does not loop infinitely because there will always be
 	// at least some unused buckets due to a maximum load factor smaller than 1
-	static_assert(MAX_LOAD_FACTOR < 1.0, "MAX_LOAD_FACTOR puts bucket array under too much load");
-
+	assert(MAX_LOAD_FACTOR > 0.0 && MAX_LOAD_FACTOR < 1.0);
 	const size_t entry_size = sizeof(struct map_entry) + map->key_size;
-	index_t tombstone = -1;
 
-	// n should be a power of 2 so we may swap % operations for bitmasks
+	// N must be a power of 2, so we can swap modulo operations for bitmasks
 	assert((n & (n-1)) == 0);
-	const size_t m = n - 1;
+	const size_t mask = n - 1;
 
-	// linearly probes buckets starting from hash(k) % n
-	for (index_t k = map->hash(key, map->key_size) & m;; k = (k + 1) & m) {
-		struct map_entry *entry = (struct map_entry *)(keys + k * entry_size);
-		// probed bucket may be "free", and then could be a re-usable tombstone
+	// step 1: start at index hash(key) % n, check for a hit or free slot
+	const hash_t hash = map->hash(key, map->key_size);
+	index_t index = hash & mask;
+	struct map_entry *entry = (struct map_entry *)(keys + index * entry_size);
+	if (entry->in_use && map->compare(key, entry->key) == 0) return index;
+	else if (!entry->in_use && !entry->is_tombstone) return index;
+
+	// step 2: collision detected, use the upper hash bits to jump elsewhere
+	index = (index + (hash >> 16)) & mask;
+
+	// step 3: now do the linear probing, looking for tombstones along the way
+	for (index_t tombstone = -1; true; index = (index + 1) & mask) {
+		entry = (struct map_entry *)(keys + index * entry_size);
 		if (!entry->in_use) {
-			if (entry->undead && tombstone < 0)
-				tombstone = k;
-			else if (!entry->undead) // actually free space
-				return tombstone >= 0 ? tombstone : k;
-		// or it may have the key we were looking for
-		} else if (map->keyeq(key, entry->key) == 0) {
-			return k;
+			if (entry->is_tombstone && tombstone < 0)
+				tombstone = index; // save first tombstone, but keep going
+			else if (!entry->is_tombstone)
+				return tombstone >= 0 ? tombstone : index; // tombstone has priority
+		} else if (map->compare(key, entry->key) == 0) {
+			return index;
 		}
 	}
 }
@@ -181,7 +200,7 @@ err_t map_insert(map_t *map, const void *key, const void *value)
 	if (was_vacant) {
 		entry->in_use = true;
 		map->count++;
-		if (!entry->undead) map->filled++;
+		if (!entry->is_tombstone) map->filled++;
 	}
 
 	// copy key and value pair
@@ -199,9 +218,9 @@ err_t map_remove(map_t *map, const void *key)
 	struct map_entry *entry = (struct map_entry *)(map->keys + k * entry_size);
 	if (!entry->in_use) return ENOKEY;
 
-	// we need to mark the deleted entry as a tombsone to enable linear probing
+	// we need to mark the deleted entry as a tombsone to enable probing
 	entry->in_use = false;
-	entry->undead = true;
+	entry->is_tombstone = true;
 	map->count--;
 
 	return 0;
