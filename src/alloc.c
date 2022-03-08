@@ -19,47 +19,47 @@ static inline byte_t *align_forward(byte_t *ptr, byte_t alignment)
 }
 
 
-static void *arena_alloc(struct allocator *ctx, void *ptr, size_t size)
+static void *bump_alloc(struct allocator *ctx, void *ptr, size_t size)
 {
 	assert(ctx != NULL);
-	arena_allocator_t *arena = (arena_allocator_t *)ctx->environment;
+	bump_allocator_t *bump = (bump_allocator_t *)ctx->environment;
 
 	// we don't deallocate
 	if (size == 0) {
 		return NULL;
 
 	// we only reallocate the most recently allocated block
-	} else if (ptr != NULL && (byte_t *)ptr != arena->previous) {
+	} else if (ptr != NULL && (byte_t *)ptr != bump->previous) {
 		return NULL;
 
 	// reallocation is pretty easy
-	} else if (ptr != NULL && (byte_t *)ptr == arena->previous) {
-		if (arena->previous + size > arena->end) return NULL; // not enough space
+	} else if (ptr != NULL && (byte_t *)ptr == bump->previous) {
+		if (bump->previous + size > bump->end) return NULL; // not enough space
 		// goto BUMP;
 
-	// we always suppose the current arena pointer has been bumped correctly
+	// we always assume the current bump pointer has been bumped correctly
 	} else if (ptr == NULL) {
-		if (arena->current + size > arena->end) return NULL; // not enough space
-		arena->previous = arena->current;
+		if (bump->current + size > bump->end) return NULL; // not enough space
+		bump->previous = bump->current;
 		// goto BUMP;
 	}
 
 // BUMP:
-	arena->current = align_forward(arena->previous + size, MAX_ALIGNMENT);
-	return arena->previous;
+	bump->current = align_forward(bump->previous + size, MAX_ALIGNMENT);
+	return bump->previous;
 }
 
-struct allocator make_arena_allocator(arena_allocator_t *arena,
-                                      void *buffer, size_t buffer_size)
+struct allocator make_bump_allocator(bump_allocator_t *bump,
+                                     void *buffer, size_t buffer_size)
 {
 	// set up initial context
-	arena->current = align_forward(buffer, MAX_ALIGNMENT);
-	arena->end = (byte_t *)buffer + buffer_size;
+	bump->current = align_forward(buffer, MAX_ALIGNMENT);
+	bump->end = (byte_t *)buffer + buffer_size;
 	assert(buffer_size > 0);
-	arena->previous = arena->end; // since we haven't done any allocations yet
+	bump->previous = bump->end; // since we haven't done any allocations yet
 
 	// return actual allocator
-	return (struct allocator){ .environment = arena, .method = arena_alloc };
+	return (struct allocator){ .environment = bump, .method = bump_alloc };
 }
 
 

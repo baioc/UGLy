@@ -4,8 +4,10 @@
 #include <assert.h>
 
 #include <string.h> // strcmp, memcpy
-#include <stdlib.h> // rand, malloc, free, NULL
+#include <stdlib.h> // rand, malloc, free, NULL, atoi
 #include <errno.h>
+#include <time.h>
+#include <stdio.h>
 
 #include <ugly/core.h> // ARRAY_SIZE
 #include <ugly/hash.h> // fnv_1a
@@ -21,7 +23,7 @@ static int strrefcmp(const void *a, const void *b)
 static hash_t strhash(const void *ptr, size_t bytes)
 {
 	const char *str = *(const char **)ptr;
-	const size_t n = strlen(str); // since bytes is actualy sizeof(char *)
+	const size_t n = strlen(str); // since bytes is actualy sizeof(char *) ...
 	return fnv_1a(str, n);
 }
 
@@ -35,7 +37,7 @@ static int test_each(const void *key, void *value, void *arr)
 	return diff;
 }
 
-int main(void)
+void test(void)
 {
 	const char *numbers[] = {"zero", "one", "two", "three", "four", "five"};
 	const int n = ARRAY_SIZE(numbers);
@@ -91,4 +93,50 @@ int main(void)
 
 	// deallocate map
 	map_destroy(&dict);
+}
+
+
+static int ulongrefcmp(const void *a, const void *b)
+{
+	return *(const unsigned long *)a - *(const unsigned long *)b;
+}
+
+static hash_t ulonghash(const void *ptr, size_t bytes)
+{
+	const unsigned long n = *(const unsigned long *)ptr;
+	return n * n;
+}
+
+void benchmark(int n, int reserve)
+{
+	n = n > 0 ? n : 1000000;
+	reserve = reserve >= 0 && reserve <= n ? reserve : 0;
+
+	map_t dict;
+	err_t err = map_init(&dict, reserve, sizeof(unsigned long), sizeof(int),
+	                     ulongrefcmp, ulonghash, STDLIB_ALLOCATOR);
+	assert(!err);
+
+	clock_t begin = clock();
+	for (int i = 0; i < n; ++i) {
+		const unsigned long key = rand();
+		const int value = i;
+		map_insert(&dict, &key, &value);
+	}
+	clock_t end = clock();
+
+	float elapsedMs = end*1e3/CLOCKS_PER_SEC - begin*1e3/CLOCKS_PER_SEC;
+	printf("Elapsed: %.6f ms\n", elapsedMs);
+}
+
+
+int main(int argc, char const *argv[])
+{
+	int n = argc > 1 ? atoi(argv[1]) : 0;
+	int reserve = argc > 2 ? atoi(argv[2]) : 0;
+
+	test();
+	benchmark(n, reserve);
+
+	return 0;
 }

@@ -8,17 +8,17 @@
 
 #include "core.h"
 
-/// Arena allocator context.
+/// Bump allocator context.
 typedef struct {
 	byte_t *end;
 	byte_t *current;
 	byte_t *previous;
-} arena_allocator_t;
+} bump_allocator_t;
 
 /**
- * @brief Sets up (or resets) an arena allocator.
+ * @brief Sets up (or resets) an bump allocator.
  *
- * @param arena arena allocator state.
+ * @param bump bump allocator state.
  * @param buffer backing memory buffer.
  * @param buffer_size buffer size, in bytes.
  *
@@ -26,8 +26,8 @@ typedef struct {
  * frees any memory and only supports in-place reallocation of the single most
  * recently allocated block.
  */
-struct allocator make_arena_allocator(arena_allocator_t *arena,
-                                      void *buffer, size_t buffer_size);
+struct allocator make_bump_allocator(bump_allocator_t *bump,
+                                     void *buffer, size_t buffer_size);
 
 /// Stack allocator context.
 typedef struct {

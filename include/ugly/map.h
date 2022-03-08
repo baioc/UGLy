@@ -30,8 +30,8 @@ typedef struct {
  * @param n initial mapping capacity.
  * @param key_size size, in bytes, of the map's keys.
  * @param value_size size, in bytes, of the map's associated values.
- * @param key_cmp function that enables equality comparison between keys.
- * @param key_hash a hash function for keys.
+ * @param key_cmp key comparison function.
+ * @param key_hash key hash function.
  * @param alloc memory allocator to be used.
  *
  * @return 0 on success or ENOMEM in case alloc fails.
@@ -77,7 +77,7 @@ err_t map_remove(map_t *map, const void *key);
  * value, which will be then immediately returned. Returns 0 otherwise.
  */
 err_t map_for_each(const map_t *map,
-                   err_t (*func)(const void *, void *, void *),
+                   err_t (*func)(const void *key, void *value, void *forward),
                    void *forward);
 
 #endif // UGLY_MAP_H

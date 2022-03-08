@@ -91,8 +91,8 @@ static index_t find_entry(const map_t *map, const byte_t *keys, size_t n,
                           const void *key)
 {
 	// this procedure does not loop infinitely because there will always be
-	/// at least some unused buckets due to a maximum load factor smaller than 1
-	assert(MAX_LOAD_FACTOR < 1);
+	// at least some unused buckets due to a maximum load factor smaller than 1
+	static_assert(MAX_LOAD_FACTOR < 1.0, "MAX_LOAD_FACTOR puts bucket array under too much load");
 
 	const size_t entry_size = sizeof(struct map_entry) + map->key_size;
 	index_t tombstone = -1;

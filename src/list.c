@@ -13,6 +13,7 @@
 #define SHRINK_RATIO ((1.0 / RESIZE_FACTOR) / 2.0)
 
 #define MIN_NONZERO_SIZE 8
+static_assert(MIN_NONZERO_SIZE > 0, "MIN_NONZERO_SIZE must be positive");
 
 
 err_t list_init(list_t *list, index_t length, size_t type_size, struct allocator alloc)
@@ -52,8 +53,8 @@ inline void *list_ref(const list_t *list, index_t index)
 
 static inline err_t list_grow(list_t *list)
 {
-	assert(RESIZE_FACTOR > 1); // amortization sanity check
-	const index_t new_capacity = list->capacity > 0 ? list->capacity * RESIZE_FACTOR : MIN_NONZERO_SIZE;
+	static_assert(RESIZE_FACTOR*MIN_NONZERO_SIZE > MIN_NONZERO_SIZE, "RESIZE_FACTOR fails to grow the array");
+	const index_t new_capacity = list->capacity >= MIN_NONZERO_SIZE ? list->capacity * RESIZE_FACTOR : MIN_NONZERO_SIZE;
 	void *new = list->alloc.method(&list->alloc, list->data, new_capacity * list->elem_size);
 	if (new == NULL) return ENOMEM;
 	list->capacity = new_capacity;
@@ -100,7 +101,7 @@ err_t list_insert(list_t *list, index_t index, const void *element)
 
 static inline void list_shrink(list_t *list)
 {
-	assert(SHRINK_RATIO < 1.0/RESIZE_FACTOR); // amortization sanity check
+	static_assert(SHRINK_RATIO < 1.0/RESIZE_FACTOR, "SHRINK_RATIO does not maintain amortized complexity");
 	const index_t new_capacity = list->capacity / RESIZE_FACTOR;
 	if (new_capacity < MIN_NONZERO_SIZE) return;
 	void *new = list->alloc.method(&list->alloc, list->data, new_capacity * list->elem_size);

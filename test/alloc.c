@@ -7,12 +7,12 @@
 #include <stdlib.h> // rand
 
 
-static void arena_allocator(void)
+static void bump_allocator(void)
 {
-	// prepare the arena
-	arena_allocator_t arena;
+	// prepare the bump
+	bump_allocator_t bump;
 	byte_t buffer[1024];
-	struct allocator alloc = make_arena_allocator(&arena, buffer, sizeof(buffer));
+	struct allocator alloc = make_bump_allocator(&bump, buffer, sizeof(buffer));
 	assert(alloc.method != NULL);
 
 	// allocate something
@@ -44,8 +44,8 @@ static void arena_allocator(void)
 	int *big_allocation = alloc.method(&alloc, NULL, sizeof(buffer) - bytes);
 	assert(big_allocation == NULL);
 
-	// reset the arena and try again
-	make_arena_allocator(&arena, buffer, sizeof(buffer));
+	// reset the bump and try again
+	make_bump_allocator(&bump, buffer, sizeof(buffer));
 	big_allocation = alloc.method(&alloc, NULL, sizeof(buffer) - bytes);
 	assert(big_allocation != NULL);
 	big_allocation[1] = 987; // just checking if this isn't misaligned
@@ -129,7 +129,7 @@ static void pool_allocator(void)
 
 int main(void)
 {
-	arena_allocator();
+	bump_allocator();
 	stack_allocator();
 	pool_allocator();
 }

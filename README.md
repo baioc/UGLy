@@ -5,7 +5,7 @@ UGLy - Unsafe Generic LibrarY
 [![pipeline status](https://gitlab.com/baioc/UGLy/badges/master/pipeline.svg?ignore_skipped=true)](https://gitlab.com/baioc/UGLy)
 [![test coverage](https://gitlab.com/baioc/UGLy/badges/master/coverage.svg)](https://baioc.gitlab.io/UGLy/coverage)
 
-[UGLy](.) is a C(11) library used to apply the DRY principle and avoid re-implementing the same common data structures, procedures and macros everywhere.
+[UGLy](.) is a C(17) library used to apply the DRY principle and avoid re-implementing the same common data structures, procedures and macros everywhere.
 
 It uses "unsafe" generics (`void *`) in the sense that all data types are seen as a sequence of bytes and the user is responsible for making sure they are properly interpreted (and memory aligned).
 It should be noted that the library's containers always use copy semantics and never "take ownership" of given elements, meaning the user is still expected to manage the lifetimes of dynamically allocated objects ("you allocate it, you free it").
@@ -51,7 +51,7 @@ Whenever memory allocations are needed, the user can choose to provide his own c
 - `STDLIB_ALLOCATOR`: simply calls `malloc`, `realloc` and `free` from stdlib.
 - `pool_allocator_t`: fixed maximum allocation size and no external fragmentation while supporting deallocations in any order.
 - `stack_allocator_t`: variable allocation size, can free and do in-place reallocations but only in Last-In-First-Out fashion.
-- `arena_allocator_t`: variable allocation size, zero memory overhead, never frees.
+- `bump_allocator_t`: variable allocation size, zero memory overhead, never frees.
 
 ### Descriptive type definitions
 

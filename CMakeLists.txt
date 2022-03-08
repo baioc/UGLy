@@ -2,11 +2,11 @@ cmake_minimum_required(VERSION 3.9.6)
 
 ## Base C project
 project(UGLy
-	VERSION 0.2.0
+	VERSION 0.3.0
 	LANGUAGES C
 	DESCRIPTION "Unsafe Generic Library"
 )
-set(CMAKE_C_FLAGS "-std=c11")
+set(CMAKE_C_FLAGS "-std=c17")
 
 if (NOT CMAKE_BUILD_TYPE OR CMAKE_BUILD_TYPE STREQUAL "")
 	set(CMAKE_BUILD_TYPE "Release" CACHE STRING "" FORCE)

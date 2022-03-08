@@ -57,7 +57,7 @@ struct allocator {
 	 */
 	void *(*method)(struct allocator *ctx, void *ptr, size_t size);
 
-	/// Reference to some geneeric environment used by this allocator's method.
+	/// Reference to some generic environment used by this allocator's method.
 	void *environment;
 };
 
@@ -70,10 +70,10 @@ void *stdlib_alloc(struct allocator *ctx, void *ptr, size_t size);
 	(struct allocator){ .method = stdlib_alloc, .environment = NULL }
 
 /// Gets number of elements in a STATIC array.
-#define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
+#define ARRAY_SIZE(ARR) (sizeof(ARR) / sizeof((ARR)[0]))
 
 /// Given the address of a certain field, finds the address of its container struct.
-#define containerof(ptr, container, field) \
-	((container *)((byte_t *)(ptr) - offsetof(container, field)))
+#define containerof(ptr, CONTAINER, FIELD) \
+	((CONTAINER *)((byte_t *)(ptr) - offsetof(CONTAINER, FIELD)))
 
 #endif // UGLY_CORE_H
