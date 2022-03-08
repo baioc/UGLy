@@ -1,7 +1,7 @@
 UGLy - Unsafe Generic LibrarY
 ======
 
-[![latest version](https://img.shields.io/badge/version-0.2.0-blue)](https://baioc.gitlab.io/UGLy/files)
+[![latest version](https://img.shields.io/badge/version-0.3.0-blue)](https://baioc.gitlab.io/UGLy/files)
 [![pipeline status](https://gitlab.com/baioc/UGLy/badges/master/pipeline.svg?ignore_skipped=true)](https://gitlab.com/baioc/UGLy)
 [![test coverage](https://gitlab.com/baioc/UGLy/badges/master/coverage.svg)](https://baioc.gitlab.io/UGLy/coverage)
 
