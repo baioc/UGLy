@@ -63,7 +63,6 @@ static void list_pointers(void)
 		assert(!err);
 	}
 
-	// check if for_each did the right thing
 	// frees each pointer (they are still on the list)
 	for (int i = 0; i < n; ++i) {
 		char *str = *((char **)list_ref(&names, i));

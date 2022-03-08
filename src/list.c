@@ -53,7 +53,7 @@ inline void *list_ref(const list_t *list, index_t index)
 
 static inline err_t list_grow(list_t *list)
 {
-	static_assert(RESIZE_FACTOR*MIN_NONZERO_SIZE > MIN_NONZERO_SIZE, "RESIZE_FACTOR fails to grow the array");
+	assert(RESIZE_FACTOR*MIN_NONZERO_SIZE > MIN_NONZERO_SIZE);
 	const index_t new_capacity = list->capacity >= MIN_NONZERO_SIZE ? list->capacity * RESIZE_FACTOR : MIN_NONZERO_SIZE;
 	void *new = list->alloc.method(&list->alloc, list->data, new_capacity * list->elem_size);
 	if (new == NULL) return ENOMEM;
@@ -101,7 +101,7 @@ err_t list_insert(list_t *list, index_t index, const void *element)
 
 static inline void list_shrink(list_t *list)
 {
-	static_assert(SHRINK_RATIO < 1.0/RESIZE_FACTOR, "SHRINK_RATIO does not maintain amortized complexity");
+	assert(SHRINK_RATIO > 0.0 && SHRINK_RATIO < 1.0/RESIZE_FACTOR);
 	const index_t new_capacity = list->capacity / RESIZE_FACTOR;
 	if (new_capacity < MIN_NONZERO_SIZE) return;
 	void *new = list->alloc.method(&list->alloc, list->data, new_capacity * list->elem_size);

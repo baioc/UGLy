@@ -22,12 +22,11 @@ static bool balanced(const char *string)
 		if (c == '(' || c == '[' || c == '{') {
 			stack_push(&stack, &c);
 		}
-		// if closing, the top of the stack must be the opening
+		// if closing, the top of the stack must be the matching opening
 		else if (c == ')' || c == ']' || c == '}') {
 			if (stack_empty(&stack)) {
 				goto FAIL;
-			}
-			else {
+			} else {
 				char last_open = *(char *)stack_peek(&stack, 0);
 				if (   (last_open == '(' && c != ')')
 				    || (last_open == '[' && c != ']')

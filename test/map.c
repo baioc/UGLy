@@ -125,6 +125,8 @@ void benchmark(int n, int reserve)
 	}
 	const clock_t end = clock();
 
+	map_destroy(&dict);
+
 	const float elapsedNs = end*1e9/CLOCKS_PER_SEC - begin*1e9/CLOCKS_PER_SEC;
 	printf("Total: %.3f ms\n", elapsedNs / 1e6);
 	printf("Per element: %.0f ns\n", elapsedNs / n);

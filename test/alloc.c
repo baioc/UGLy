@@ -9,7 +9,7 @@
 
 static void bump_allocator(void)
 {
-	// prepare the bump
+	// prepare the allocator
 	bump_allocator_t bump;
 	byte_t buffer[1024];
 	struct allocator alloc = make_bump_allocator(&bump, buffer, sizeof(buffer));
@@ -32,11 +32,11 @@ static void bump_allocator(void)
 	resized_string = alloc.method(&alloc, some_string, 0.5*bytes);
 	assert(resized_string == some_string);
 
-	// another allocation on
+	// another allocation on top
 	int *another_string = alloc.method(&alloc, NULL, 0.5*bytes);
 	assert(another_string != NULL);
 
-	// freeing doesn't work, but shouldn't explode or anything
+	// freeing doesn't work, but this shouldn't explode or anything
 	alloc.method(&alloc, some_string, 0);
 	alloc.method(&alloc, another_string, 0);
 
@@ -91,39 +91,42 @@ static void stack_allocator(void)
 	assert(big_allocation != NULL);
 }
 
-struct c { float re; float im; };
 
 static void pool_allocator(void)
 {
 #define MAX_ELEMS 128
+#define C_SIZE sizeof(struct c)
+	struct c { float re; float im; };
+
 	// prepare the allocator
 	pool_allocator_t pool;
-	const size_t size = sizeof(struct c);
-	byte_t buffer[MAX_ELEMS * size];
-	struct allocator alloc = make_pool_allocator(&pool, buffer, sizeof(buffer), size);
+	byte_t buffer[MAX_ELEMS * C_SIZE];
+	struct allocator alloc = make_pool_allocator(&pool, buffer, sizeof(buffer), C_SIZE);
 	assert(alloc.method != NULL);
 
 	// allocate (and then reallocate) a bunch of objects
 	struct c *to_be_freed = NULL;
 	for (int i = 0; i < MAX_ELEMS; ++i) {
-		struct c *test = alloc.method(&alloc, NULL, size);
+		struct c *test = alloc.method(&alloc, NULL, C_SIZE);
 		assert(test != NULL);
 		test->re = i;
 		test->im = -i;
-		assert(alloc.method(&alloc, test, size) == test);
+		assert(alloc.method(&alloc, test, C_SIZE) == test);
 		assert(test->re == i);
 		assert(test->im == -i);
 		if (i == rand() % MAX_ELEMS) to_be_freed = test;
 	}
 
 	// this one should fail
-	struct c *test = alloc.method(&alloc, NULL, size);
+	struct c *test = alloc.method(&alloc, NULL, C_SIZE);
 	assert(test == NULL);
 
 	// but we can free some space and try again
 	alloc.method(&alloc, to_be_freed, 0);
-	test = alloc.method(&alloc, NULL, size);
+	test = alloc.method(&alloc, NULL, C_SIZE);
 	assert(test != NULL);
+
+#undef C_SIZE
 #undef MAX_ELEMS
 }
 

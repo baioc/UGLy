@@ -1,6 +1,6 @@
 /**
  * @file alloc.h
- * @brief Allocators on top of user-provided buffers.
+ * @brief Arena allocators on top of user-provided buffers.
  */
 
 #ifndef UGLY_ALLOC_H
@@ -16,7 +16,7 @@ typedef struct {
 } bump_allocator_t;
 
 /**
- * @brief Sets up (or resets) an bump allocator.
+ * @brief Sets up (or resets) a bump allocator.
  *
  * @param bump bump allocator state.
  * @param buffer backing memory buffer.

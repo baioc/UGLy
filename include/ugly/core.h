@@ -13,13 +13,13 @@
 #include <stddef.h>
 /** @endcond */
 
-/// Given that C is a "byte-manipulation language", this should be standard.
+/// This should be in the standard.
 typedef unsigned char byte_t;
 
-/// A type used for error codes, should be zero when there were no errors.
+/// A (signed int) type for error codes, should be zero on success.
 typedef int err_t;
 
-/// Signed type used to index data structures.
+/// Signed integer type used to index data structures.
 typedef long index_t;
 
 /**
